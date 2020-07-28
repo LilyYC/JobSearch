@@ -1,7 +1,7 @@
 #################################
 #  This module will create a file that scrap for jobs from some of the main job searching websites
 #  Based on experience and habbit, I choose to use Indeed and Workopolis
-#  
+# 
 # Design thinking: 
 # What are the key words, how to filter for information that I need
 # Which language shall I use? Is SQL a better choice for storing data?
@@ -21,14 +21,14 @@ driver = webdriver.Chrome(ChromeDriverManager().install())
 
 def cleaned(tag): return tag.text.replace('\n', '').strip()
 
-def get_jobs(title):    
+def get_jobs(title, location):
     
     data = pd.DataFrame(['Title','Company', 'Description', 'Salary', 'Date Posted', 'Remote'])
     
-    for i in range(0, 3950, 10):
+    for i in range(0, 100, 10):
     
         driver.get(
-            'https://ca.indeed.com/jobs?q='+title+'&sort=date&l=Toronto%2C+ON&fromage=14&start='+str(i))
+            'https://ca.indeed.com/jobs?q='+title+'&sort=date&l='+location+'&fromage=14&start='+str(i))
         driver.implicitly_wait(4)
     
         all_jobs = driver.find_elements_by_class_name('row')
@@ -80,6 +80,7 @@ def get_jobs(title):
 if __name__=='__main__':
     from datetime import date
     fdate = date.today()
-    job_title = input("Enter your desired job title here:")
-    data = get_jobs(job_title)
+    desired_job = input("Enter your desired job title here:")
+    desired_loc = input("Enter your desired city to work here:")
+    data = get_jobs(desired_job, desired_loc)
     data.to_csv(f'{job_title} Jobs-{fdate}.csv')
